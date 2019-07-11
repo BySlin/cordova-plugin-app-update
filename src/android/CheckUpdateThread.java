@@ -25,7 +25,7 @@ public class CheckUpdateThread implements Runnable {
     private Context mContext;
     private List<Version> queue;
     private String packageName;
-    private String updateXmlUrl;
+    private String updateUrl;
     private AuthenticationOptions authentication;
     private Handler mHandler;
 
@@ -37,11 +37,11 @@ public class CheckUpdateThread implements Runnable {
         return mJSONObject;
     }
 
-    public CheckUpdateThread(Context mContext, Handler mHandler, List<Version> queue, String packageName, String updateXmlUrl, JSONObject options) {
+    public CheckUpdateThread(Context mContext, Handler mHandler, List<Version> queue, String packageName, String updateUrl, JSONObject options) {
         this.mContext = mContext;
         this.queue = queue;
         this.packageName = packageName;
-        this.updateXmlUrl = updateXmlUrl;
+        this.updateUrl = updateUrl;
         this.authentication = new AuthenticationOptions(options);
         this.mHandler = mHandler;
     }
@@ -71,7 +71,7 @@ public class CheckUpdateThread implements Runnable {
         LOG.d(TAG, "returnFileIS..");
         InputStream is = null;
         try {
-            HttpURLConnection conn = Utils.openConnection(path);//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
+            HttpURLConnection conn = Utils.openConnection(path + "latest.json");//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
             if (this.authentication.hasCredentials()) {
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
@@ -126,7 +126,7 @@ public class CheckUpdateThread implements Runnable {
      */
     private int getVersionCodeRemote() {
         int versionCodeRemote = 0;
-        InputStream is = returnFileIS(updateXmlUrl);
+        InputStream is = returnFileIS(updateUrl);
 
         //解析json
         try {

@@ -31,12 +31,15 @@ public class DownloadApkThread implements Runnable {
     private DownloadHandler downloadHandler;
     private Handler mHandler;
     private AuthenticationOptions authentication;
+    private String updateUrl;
 
-    public DownloadApkThread(Context mContext, Handler mHandler, ProgressBar mProgress, AlertDialog mDownloadDialog, JSONObject mJSONObject, JSONObject options) {
+    public DownloadApkThread(Context mContext, Handler mHandler, ProgressBar mProgress, AlertDialog mDownloadDialog, JSONObject mJSONObject, String updateUrl, JSONObject options) {
         this.mDownloadDialog = mDownloadDialog;
         this.mJSONObject = mJSONObject;
         this.mHandler = mHandler;
         this.authentication = new AuthenticationOptions(options);
+
+        this.updateUrl = updateUrl;
 
         this.mSavePath = Environment.getExternalStorageDirectory() + "/" + "download"; // SD Path
         this.downloadHandler = new DownloadHandler(mContext, mProgress, mDownloadDialog, this.mSavePath, mJSONObject);
@@ -59,9 +62,9 @@ public class DownloadApkThread implements Runnable {
             // 判断SD卡是否存在，并且是否具有读写权限
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 // 获得存储卡的路径
-                String url = mJSONObject.getString("url");
+                String name = mJSONObject.getString("name");
                 // 创建连接
-                HttpURLConnection conn = Utils.openConnection(url);
+                HttpURLConnection conn = Utils.openConnection(updateUrl + name);
 
                 if (this.authentication.hasCredentials()) {
                     conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());

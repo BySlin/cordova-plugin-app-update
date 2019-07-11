@@ -6,12 +6,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Handler;
 import android.widget.ProgressBar;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.LOG;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class UpdateManager {
      *       <url>http://192.168.3.102/android.apk</url>
      *   </update>
      */
-    private String updateXmlUrl;
+    private String updateUrl;
     private JSONObject options;
     private JSONArray args;
     private CordovaInterface cordova;
@@ -60,7 +61,7 @@ public class UpdateManager {
     public UpdateManager(JSONArray args, CallbackContext callbackContext, Context context, String updateUrl, JSONObject options) {
         this.args = args;
         this.callbackContext = callbackContext;
-        this.updateXmlUrl = updateUrl;
+        this.updateUrl = updateUrl;
         this.options = options;
         this.mContext = context;
         packageName = mContext.getPackageName();
@@ -71,7 +72,7 @@ public class UpdateManager {
             throws JSONException {
         this.args = args;
         this.callbackContext = callbackContext;
-        this.updateXmlUrl = args.getString(0);
+        this.updateUrl = args.getString(0);
         this.options = args.getJSONObject(1);
         return this;
     }
@@ -127,7 +128,7 @@ public class UpdateManager {
     public void checkUpdate() {
         LOG.d(TAG, "checkUpdate..");
 
-        checkUpdateThread = new CheckUpdateThread(mContext, mHandler, queue, packageName, updateXmlUrl, options);
+        checkUpdateThread = new CheckUpdateThread(mContext, mHandler, queue, packageName, updateUrl, options);
         this.cordova.getThreadPool().execute(checkUpdateThread);
         //new Thread(checkUpdateThread).start();
     }
@@ -152,12 +153,14 @@ public class UpdateManager {
         boolean skipPromptDialog = false;
         try {
             skipPromptDialog = options.getBoolean("skipPromptDialog");
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+        }
 
         boolean skipProgressDialog = false;
         try {
             skipProgressDialog = options.getBoolean("skipProgressDialog");
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+        }
 
         //比对版本号
         //检查软件是否有更新版本
@@ -196,7 +199,8 @@ public class UpdateManager {
         boolean skipProgressDialog = false;
         try {
             skipProgressDialog = options.getBoolean("skipProgressDialog");
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+        }
 
         // 显示下载对话框
         Map<String, Object> ret = msgBox.showDownloadDialog(
@@ -260,7 +264,7 @@ public class UpdateManager {
         LOG.d(TAG, "downloadApk" + mProgress);
 
         // 启动新线程下载软件
-        downloadApkThread = new DownloadApkThread(mContext, mHandler, mProgress, mDownloadDialog, checkUpdateThread.getMJSONObject(), options);
+        downloadApkThread = new DownloadApkThread(mContext, mHandler, mProgress, mDownloadDialog, checkUpdateThread.getMJSONObject(), updateUrl, options);
         this.cordova.getThreadPool().execute(downloadApkThread);
         // new Thread(downloadApkThread).start();
     }
