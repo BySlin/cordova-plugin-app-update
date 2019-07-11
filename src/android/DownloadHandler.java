@@ -126,16 +126,17 @@ public class DownloadHandler extends Handler {
                 out = process.getOutputStream();
 
                 out.write(("pm install -r " + path + "\n").getBytes());
-                in = process.getInputStream();
-                int len = 0;
-                byte[] bs = new byte[256];
-
-                while (-1 != (len = in.read(bs))) {
-                    String state = new String(bs, 0, len);
-                    if (state.equals("Success\n")) {
-
-                    }
-                }
+                out.flush();
+//                in = process.getInputStream();
+//                int len = 0;
+//                byte[] bs = new byte[256];
+//
+//                while (-1 != (len = in.read(bs))) {
+//                    String state = new String(bs, 0, len);
+//                    if (state.equals("Success\n")) {
+//
+//                    }
+//                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
