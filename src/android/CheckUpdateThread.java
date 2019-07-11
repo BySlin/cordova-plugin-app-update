@@ -112,7 +112,7 @@ public class CheckUpdateThread implements Runnable {
         int versionCode = 0;
         try {
             // 获取软件版本号，对应AndroidManifest.xml下android:versionName
-            versionCode = Integer.valueOf(context.getPackageManager().getPackageInfo(packageName, 0).versionName.replaceAll(".", ""));
+            versionCode = Integer.valueOf(context.getPackageManager().getPackageInfo(packageName, 0).versionName.replaceAll("\\.", ""));
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -132,7 +132,7 @@ public class CheckUpdateThread implements Runnable {
         try {
             setMJSONObject(new JSONObject(inputStream2String(is)));
             if (null != getMJSONObject()) {
-                versionCodeRemote = Integer.valueOf(getMJSONObject().getString("version").replaceAll(".", ""));
+                versionCodeRemote = Integer.valueOf(getMJSONObject().getString("version").replaceAll("\\.", ""));
             }
         } catch (Exception e) {
             e.printStackTrace();
