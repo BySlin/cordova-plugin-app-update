@@ -1,4 +1,4 @@
-package android;
+package com.vaenow.appupdate.android;
 
 import android.Manifest;
 import android.content.Intent;

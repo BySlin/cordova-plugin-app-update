@@ -1,4 +1,4 @@
-package android;
+package com.vaenow.appupdate.android;
 
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -23,10 +23,10 @@ public class CheckUpdateThread implements Runnable {
     /* 保存解析的JSON信息 */
     private JSONObject mJSONObject;
     private Context mContext;
-    private List<Version> queue;
+    private List<com.vaenow.appupdate.android.Version> queue;
     private String packageName;
     private String updateUrl;
-    private AuthenticationOptions authentication;
+    private com.vaenow.appupdate.android.AuthenticationOptions authentication;
     private Handler mHandler;
 
     public void setMJSONObject(JSONObject mJSONObject) {
@@ -37,12 +37,12 @@ public class CheckUpdateThread implements Runnable {
         return mJSONObject;
     }
 
-    public CheckUpdateThread(Context mContext, Handler mHandler, List<Version> queue, String packageName, String updateUrl, JSONObject options) {
+    public CheckUpdateThread(Context mContext, Handler mHandler, List<com.vaenow.appupdate.android.Version> queue, String packageName, String updateUrl, JSONObject options) {
         this.mContext = mContext;
         this.queue = queue;
         this.packageName = packageName;
         this.updateUrl = updateUrl;
-        this.authentication = new AuthenticationOptions(options);
+        this.authentication = new com.vaenow.appupdate.android.AuthenticationOptions(options);
         this.mHandler = mHandler;
     }
 
@@ -52,12 +52,12 @@ public class CheckUpdateThread implements Runnable {
         int versionCodeRemote = getVersionCodeRemote();  //获取服务器当前软件版本
 
         queue.clear(); //ensure the queue is empty
-        queue.add(new Version(versionCodeLocal, versionCodeRemote));
+        queue.add(new com.vaenow.appupdate.android.Version(versionCodeLocal, versionCodeRemote));
 
         if (versionCodeLocal == 0 || versionCodeRemote == 0) {
-            mHandler.sendEmptyMessage(Constants.VERSION_RESOLVE_FAIL);
+            mHandler.sendEmptyMessage(com.vaenow.appupdate.android.Constants.VERSION_RESOLVE_FAIL);
         } else {
-            mHandler.sendEmptyMessage(Constants.VERSION_COMPARE_START);
+            mHandler.sendEmptyMessage(com.vaenow.appupdate.android.Constants.VERSION_COMPARE_START);
         }
     }
 
@@ -71,7 +71,7 @@ public class CheckUpdateThread implements Runnable {
         LOG.d(TAG, "returnFileIS..");
         InputStream is = null;
         try {
-            HttpURLConnection conn = Utils.openConnection(path + "latest.json");//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
+            HttpURLConnection conn = com.vaenow.appupdate.android.Utils.openConnection(path + "latest.json");//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
             if (this.authentication.hasCredentials()) {
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
@@ -82,10 +82,10 @@ public class CheckUpdateThread implements Runnable {
             is = conn.getInputStream(); //得到网络返回的输入流
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            mHandler.sendEmptyMessage(Constants.REMOTE_FILE_NOT_FOUND);
+            mHandler.sendEmptyMessage(com.vaenow.appupdate.android.Constants.REMOTE_FILE_NOT_FOUND);
         } catch (IOException e) {
             e.printStackTrace();
-            mHandler.sendEmptyMessage(Constants.NETWORK_ERROR);
+            mHandler.sendEmptyMessage(com.vaenow.appupdate.android.Constants.NETWORK_ERROR);
         }
 
         return is;

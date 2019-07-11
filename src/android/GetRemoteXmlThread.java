@@ -1,4 +1,4 @@
-package android;
+package com.vaenow.appupdate.android;
 
 /**
  * Created by LuoWen on 2015/10/27.

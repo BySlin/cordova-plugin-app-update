@@ -1,4 +1,4 @@
-package android;
+package com.vaenow.appupdate.android;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,6 +13,8 @@ import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
+
+import com.vaenow.appupdate.android.MsgHelper;
 
 import org.apache.cordova.BuildHelper;
 import org.apache.cordova.LOG;

@@ -1,4 +1,4 @@
-package android;
+package com.vaenow.appupdate.android;
 
 import org.json.JSONException;
 import org.json.JSONObject;

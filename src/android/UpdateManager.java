@@ -1,4 +1,4 @@
-package android;
+package com.vaenow.appupdate.android;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -43,7 +43,7 @@ public class UpdateManager {
     private Context mContext;
     private MsgBox msgBox;
     private Boolean isDownloading = false;
-    private List<Version> queue = new ArrayList<Version>(1);
+    private List<Version> queue = new ArrayList<>(1);
     private CheckUpdateThread checkUpdateThread;
     private DownloadApkThread downloadApkThread;
 
