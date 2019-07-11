@@ -52,11 +52,11 @@ public class DownloadHandler extends Handler {
     public void handleMessage(Message msg) {
         switch (msg.what) {
             // 正在下载
-            case Constants.DOWNLOAD:
+            case com.vaenow.appupdate.android.Constants.DOWNLOAD:
                 // 设置进度条位置
                 mProgress.setProgress(progress);
                 break;
-            case Constants.DOWNLOAD_FINISH:
+            case com.vaenow.appupdate.android.Constants.DOWNLOAD_FINISH:
                 updateMsgDialog();
                 // 安装文件
                 installApk();
@@ -96,7 +96,7 @@ public class DownloadHandler extends Handler {
 
         File apkFile = null;
         try {
-            apkFile = new File(mSavePath, mJSONObject.get("name") + ".apk");
+            apkFile = new File(mSavePath, mJSONObject.getString("name"));
             if (!apkFile.exists()) {
                 LOG.e(TAG, "Could not find APK: " + mJSONObject.get("name"));
                 return;
