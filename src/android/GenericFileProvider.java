@@ -1,4 +1,4 @@
-package com.vaenow.appupdate.android;
+package android;
 
 import android.support.v4.content.FileProvider;
 

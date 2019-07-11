@@ -1,4 +1,4 @@
-package com.vaenow.appupdate.android;
+package android;
 
 /**
  * Created by Administrator on 2016/1/20.

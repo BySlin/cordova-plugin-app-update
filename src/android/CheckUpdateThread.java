@@ -1,13 +1,11 @@
-package com.vaenow.appupdate.android;
+package android;
 
-import android.AuthenticationOptions;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Handler;
-import android.util.Base64;
+
 import org.apache.cordova.LOG;
 import org.json.JSONObject;
-import org.json.JSONException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,8 +14,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
-
-import 	java.nio.charset.StandardCharsets;
 
 /**
  * Created by LuoWen on 2015/12/14.

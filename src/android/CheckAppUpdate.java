@@ -1,17 +1,15 @@
-package com.vaenow.appupdate.android;
+package android;
 
-import android.app.Activity;
 import android.Manifest;
-import android.os.Build;
-import android.net.Uri;
-import android.provider.Settings;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 
+import org.apache.cordova.BuildHelper;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.BuildHelper;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 

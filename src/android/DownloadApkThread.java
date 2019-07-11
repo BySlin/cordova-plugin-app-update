@@ -1,14 +1,12 @@
-package com.vaenow.appupdate.android;
+package android;
 
-import android.AuthenticationOptions;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Environment;
 import android.os.Handler;
 import android.widget.ProgressBar;
-import android.util.Base64;
+
 import org.json.JSONObject;
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,8 +16,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-
-import 	java.nio.charset.StandardCharsets;
 
 /**
  * 下载文件线程

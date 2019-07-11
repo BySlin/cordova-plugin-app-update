@@ -1,4 +1,4 @@
-package com.vaenow.appupdate.android;
+package android;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -9,6 +9,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
+
 import org.apache.cordova.LOG;
 
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class MsgBox {
         if (noticeDialog == null) {
             LOG.d(TAG, "showNoticeDialog");
             // 构造对话框
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            Builder builder = new Builder(mContext);
             builder.setTitle(msgHelper.getString(MsgHelper.UPDATE_TITLE));
             builder.setMessage(msgHelper.getString(MsgHelper.UPDATE_MESSAGE));
             // 更新
@@ -67,7 +68,7 @@ public class MsgBox {
             LOG.d(TAG, "showDownloadDialog");
 
             // 构造软件下载对话框
-            AlertDialog.Builder builder = new Builder(mContext);
+            Builder builder = new Builder(mContext);
             builder.setTitle(msgHelper.getString(MsgHelper.UPDATING));
             // 给下载对话框增加进度条
             final LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -110,7 +111,7 @@ public class MsgBox {
         if (this.errorDialog == null) {
             LOG.d(TAG, "initErrorDialog");
             // 构造对话框
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            Builder builder = new Builder(mContext);
             builder.setTitle(msgHelper.getString(MsgHelper.UPDATE_ERROR_TITLE));
             builder.setMessage(msgHelper.getString(MsgHelper.UPDATE_ERROR_MESSAGE));
             // 更新
