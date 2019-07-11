@@ -4,8 +4,6 @@ package com.vaenow.appupdate.android;
  * Created by LuoWen on 2015/12/14.
  */
 public interface Constants {
-    /* 下载中 */
-    int DOWNLOAD = 1;
     /* 下载结束 */
     int DOWNLOAD_FINISH = 2;
     /* 点击开始下载按钮*/
@@ -35,11 +33,6 @@ public interface Constants {
      * 没有相应的方法
      */
     int NO_SUCH_METHOD = 501;
-
-    /**
-     * Permissions
-     */
-    int PERMISSION_DENIED = 601;
 
     /**
      * 未知错误

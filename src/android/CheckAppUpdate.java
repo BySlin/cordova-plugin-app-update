@@ -9,8 +9,6 @@ import org.json.JSONException;
  * Created by LuoWen on 2015/10/27.
  */
 public class CheckAppUpdate extends CordovaPlugin {
-    public static final String TAG = "CheckAppUpdate";
-
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("checkAppUpdate")) {
@@ -22,10 +20,6 @@ public class CheckAppUpdate extends CordovaPlugin {
         callbackContext.error(Utils.makeJSON(Constants.NO_SUCH_METHOD, "No such method: " + action));
         return false;
     }
-
-    //////////
-    // Update Manager
-    //////////
 
     // UpdateManager singleton
     private UpdateManager updateManager = null;
