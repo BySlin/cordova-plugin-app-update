@@ -1,26 +1,21 @@
 package com.vaenow.appupdate.android;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 
-import com.vaenow.appupdate.android.MsgHelper;
-
-import org.apache.cordova.BuildHelper;
 import org.apache.cordova.LOG;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created by LuoWen on 2015/12/14.
@@ -37,11 +32,11 @@ public class DownloadHandler extends Handler {
     private String mSavePath;
     /* 保存解析的JSON信息 */
     private JSONObject mJSONObject;
-    private MsgHelper msgHelper;
+    private com.vaenow.appupdate.android.MsgHelper msgHelper;
     private AlertDialog mDownloadDialog;
 
     public DownloadHandler(Context mContext, ProgressBar mProgress, AlertDialog mDownloadDialog, String mSavePath, JSONObject mJSONObject) {
-        this.msgHelper = new MsgHelper(mContext.getPackageName(), mContext.getResources());
+        this.msgHelper = new com.vaenow.appupdate.android.MsgHelper(mContext.getPackageName(), mContext.getResources());
         this.mDownloadDialog = mDownloadDialog;
         this.mContext = mContext;
         this.mProgress = mProgress;
@@ -71,7 +66,7 @@ public class DownloadHandler extends Handler {
     }
 
     public void updateMsgDialog() {
-        mDownloadDialog.setTitle(msgHelper.getString(MsgHelper.DOWNLOAD_COMPLETE_TITLE));
+        mDownloadDialog.setTitle(msgHelper.getString(com.vaenow.appupdate.android.MsgHelper.DOWNLOAD_COMPLETE_TITLE));
         if (mDownloadDialog.isShowing()) {
             mDownloadDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setVisibility(View.GONE); //Update in background
             mDownloadDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setVisibility(View.VISIBLE); //Install Manually
@@ -96,9 +91,10 @@ public class DownloadHandler extends Handler {
 
         File apkFile = null;
         try {
-            apkFile = new File(mSavePath, mJSONObject.getString("name"));
+            String name = mJSONObject.getString("name");
+            apkFile = new File(mSavePath, name);
             if (!apkFile.exists()) {
-                LOG.e(TAG, "Could not find APK: " + mJSONObject.get("name"));
+                LOG.e(TAG, "Could not find APK: " + name);
                 return;
             }
         } catch (Exception e) {
@@ -107,22 +103,42 @@ public class DownloadHandler extends Handler {
 
         LOG.d(TAG, "APK Filename: " + apkFile.toString());
 
-        // 通过Intent安装APK文件
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            LOG.d(TAG, "Build SDK Greater than or equal to Nougat");
-            String applicationId = (String) BuildHelper.getBuildConfigValue((Activity) mContext, "APPLICATION_ID");
-            Uri apkUri = FileProvider.getUriForFile(mContext, applicationId + ".appupdate.provider", apkFile);
-            Intent i = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-            i.setData(apkUri);
-            i.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            mContext.startActivity(i);
-        } else {
-            LOG.d(TAG, "Build SDK less than Nougat");
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.setDataAndType(Uri.parse("file://" + apkFile.toString()), "application/vnd.android.package-archive");
-            mContext.startActivity(i);
+        new ApkInstallThread(apkFile.getAbsolutePath()).start();
+    }
+
+    public class ApkInstallThread extends Thread {
+        private String path;
+
+        public ApkInstallThread(String path) {
+            this.path = path;
         }
 
+        @Override
+        public void run() {
+            super.run();
+
+            Process process = null;
+            OutputStream out = null;
+            InputStream in = null;
+
+            try {
+                process = Runtime.getRuntime().exec("su");
+                out = process.getOutputStream();
+
+                out.write(("pm install -r " + path + "\n").getBytes());
+                in = process.getInputStream();
+                int len = 0;
+                byte[] bs = new byte[256];
+
+                while (-1 != (len = in.read(bs))) {
+                    String state = new String(bs, 0, len);
+                    if (state.equals("Success\n")) {
+
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
