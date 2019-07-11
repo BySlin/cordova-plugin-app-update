@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * 下载文件线程
@@ -60,11 +59,11 @@ public class DownloadApkThread implements Runnable {
             // 判断SD卡是否存在，并且是否具有读写权限
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 // 获得存储卡的路径
-                URL url = new URL(mJSONObject.getString("url"));
+                String url = mJSONObject.getString("url");
                 // 创建连接
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn = Utils.openConnection(url);
 
-                if(this.authentication.hasCredentials()){
+                if (this.authentication.hasCredentials()) {
                     conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
                 }
 
@@ -79,7 +78,7 @@ public class DownloadApkThread implements Runnable {
                 if (!file.exists()) {
                     file.mkdir();
                 }
-                File apkFile = new File(mSavePath, mJSONObject.get("name")+".apk");
+                File apkFile = new File(mSavePath, mJSONObject.get("name") + ".apk");
                 FileOutputStream fos = new FileOutputStream(apkFile);
                 int count = 0;
                 // 缓存

@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -70,13 +69,9 @@ public class CheckUpdateThread implements Runnable {
      */
     private InputStream returnFileIS(String path) {
         LOG.d(TAG, "returnFileIS..");
-
-        URL url = null;
         InputStream is = null;
-
         try {
-            url = new URL(path);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
+            HttpURLConnection conn = Utils.openConnection(path);//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
             if (this.authentication.hasCredentials()) {
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
