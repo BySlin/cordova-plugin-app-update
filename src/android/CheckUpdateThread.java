@@ -7,12 +7,12 @@ import android.os.Handler;
 import org.apache.cordova.LOG;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -21,8 +21,8 @@ import java.util.List;
 public class CheckUpdateThread implements Runnable {
     private String TAG = "CheckUpdateThread";
 
-    /* 保存解析的XML信息 */
-    HashMap<String, String> mHashMap;
+    /* 保存解析的JSON信息 */
+    private JSONObject mJSONObject;
     private Context mContext;
     private List<Version> queue;
     private String packageName;
@@ -30,12 +30,12 @@ public class CheckUpdateThread implements Runnable {
     private AuthenticationOptions authentication;
     private Handler mHandler;
 
-    private void setMHashMap(HashMap<String, String> mHashMap) {
-        this.mHashMap = mHashMap;
+    public void setMJSONObject(JSONObject mJSONObject) {
+        this.mJSONObject = mJSONObject;
     }
 
-    public HashMap<String, String> getMHashMap() {
-        return mHashMap;
+    public JSONObject getMJSONObject() {
+        return mJSONObject;
     }
 
     public CheckUpdateThread(Context mContext, Handler mHandler, List<Version> queue, String packageName, String updateXmlUrl, JSONObject options) {
@@ -78,7 +78,7 @@ public class CheckUpdateThread implements Runnable {
             url = new URL(path);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 
-            if(this.authentication.hasCredentials()){
+            if (this.authentication.hasCredentials()) {
                 conn.setRequestProperty("Authorization", this.authentication.getEncodedAuthorization());
             }
 
@@ -116,8 +116,8 @@ public class CheckUpdateThread implements Runnable {
 
         int versionCode = 0;
         try {
-            // 获取软件版本号，对应AndroidManifest.xml下android:versionCode
-            versionCode = context.getPackageManager().getPackageInfo(packageName, 0).versionCode;
+            // 获取软件版本号，对应AndroidManifest.xml下android:versionName
+            versionCode = Integer.valueOf(context.getPackageManager().getPackageInfo(packageName, 0).versionName.replaceAll(".", ""));
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -131,19 +131,28 @@ public class CheckUpdateThread implements Runnable {
      */
     private int getVersionCodeRemote() {
         int versionCodeRemote = 0;
-
         InputStream is = returnFileIS(updateXmlUrl);
-        // 解析XML文件。 由于XML文件比较小，因此使用DOM方式进行解析
-        ParseXmlService service = new ParseXmlService();
+
+        //解析json
         try {
-            setMHashMap(service.parseXml(is));
+            setMJSONObject(new JSONObject(inputStream2String(is)));
+            if (null != getMJSONObject()) {
+                versionCodeRemote = Integer.valueOf(getMJSONObject().getString("version").replaceAll(".", ""));
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        if (null != getMHashMap()) {
-            versionCodeRemote = Integer.valueOf(getMHashMap().get("version"));
         }
 
         return versionCodeRemote;
     }
+
+    public static String inputStream2String(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int i = -1;
+        while ((i = is.read()) != -1) {
+            baos.write(i);
+        }
+        return baos.toString();
+    }
+
 }

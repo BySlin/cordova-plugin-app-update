@@ -10,12 +10,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 
 /**
  * 下载文件线程
@@ -23,8 +20,8 @@ import java.util.HashMap;
 public class DownloadApkThread implements Runnable {
     private String TAG = "DownloadApkThread";
 
-    /* 保存解析的XML信息 */
-    HashMap<String, String> mHashMap;
+    /* 保存解析的JSON信息 */
+    private JSONObject mJSONObject;
     /* 下载保存路径 */
     private String mSavePath;
     /* 记录进度条数量 */
@@ -36,14 +33,14 @@ public class DownloadApkThread implements Runnable {
     private Handler mHandler;
     private AuthenticationOptions authentication;
 
-    public DownloadApkThread(Context mContext, Handler mHandler, ProgressBar mProgress, AlertDialog mDownloadDialog, HashMap<String, String> mHashMap, JSONObject options) {
+    public DownloadApkThread(Context mContext, Handler mHandler, ProgressBar mProgress, AlertDialog mDownloadDialog, JSONObject mJSONObject, JSONObject options) {
         this.mDownloadDialog = mDownloadDialog;
-        this.mHashMap = mHashMap;
+        this.mJSONObject = mJSONObject;
         this.mHandler = mHandler;
         this.authentication = new AuthenticationOptions(options);
 
         this.mSavePath = Environment.getExternalStorageDirectory() + "/" + "download"; // SD Path
-        this.downloadHandler = new DownloadHandler(mContext, mProgress, mDownloadDialog, this.mSavePath, mHashMap);
+        this.downloadHandler = new DownloadHandler(mContext, mProgress, mDownloadDialog, this.mSavePath, mJSONObject);
     }
 
 
@@ -63,7 +60,7 @@ public class DownloadApkThread implements Runnable {
             // 判断SD卡是否存在，并且是否具有读写权限
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 // 获得存储卡的路径
-                URL url = new URL(mHashMap.get("url"));
+                URL url = new URL(mJSONObject.getString("url"));
                 // 创建连接
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -82,7 +79,7 @@ public class DownloadApkThread implements Runnable {
                 if (!file.exists()) {
                     file.mkdir();
                 }
-                File apkFile = new File(mSavePath, mHashMap.get("name")+".apk");
+                File apkFile = new File(mSavePath, mJSONObject.get("name")+".apk");
                 FileOutputStream fos = new FileOutputStream(apkFile);
                 int count = 0;
                 // 缓存
@@ -109,9 +106,7 @@ public class DownloadApkThread implements Runnable {
                 fos.close();
                 is.close();
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

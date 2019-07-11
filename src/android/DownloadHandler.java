@@ -16,9 +16,9 @@ import android.widget.ProgressBar;
 
 import org.apache.cordova.BuildHelper;
 import org.apache.cordova.LOG;
+import org.json.JSONObject;
 
 import java.io.File;
-import java.util.HashMap;
 
 /**
  * Created by LuoWen on 2015/12/14.
@@ -33,18 +33,18 @@ public class DownloadHandler extends Handler {
     private int progress;
     /* 下载保存路径 */
     private String mSavePath;
-    /* 保存解析的XML信息 */
-    private HashMap<String, String> mHashMap;
+    /* 保存解析的JSON信息 */
+    private JSONObject mJSONObject;
     private MsgHelper msgHelper;
     private AlertDialog mDownloadDialog;
 
-    public DownloadHandler(Context mContext, ProgressBar mProgress, AlertDialog mDownloadDialog, String mSavePath, HashMap<String, String> mHashMap) {
+    public DownloadHandler(Context mContext, ProgressBar mProgress, AlertDialog mDownloadDialog, String mSavePath, JSONObject mJSONObject) {
         this.msgHelper = new MsgHelper(mContext.getPackageName(), mContext.getResources());
         this.mDownloadDialog = mDownloadDialog;
         this.mContext = mContext;
         this.mProgress = mProgress;
         this.mSavePath = mSavePath;
-        this.mHashMap = mHashMap;
+        this.mJSONObject = mJSONObject;
     }
 
     public void handleMessage(Message msg) {
@@ -92,16 +92,21 @@ public class DownloadHandler extends Handler {
     private void installApk() {
         LOG.d(TAG, "Installing APK");
 
-        File apkFile = new File(mSavePath, mHashMap.get("name")+".apk");
-        if (!apkFile.exists()) {
-            LOG.e(TAG, "Could not find APK: " + mHashMap.get("name"));
-            return;
+        File apkFile = null;
+        try {
+            apkFile = new File(mSavePath, mJSONObject.get("name") + ".apk");
+            if (!apkFile.exists()) {
+                LOG.e(TAG, "Could not find APK: " + mJSONObject.get("name"));
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         LOG.d(TAG, "APK Filename: " + apkFile.toString());
 
         // 通过Intent安装APK文件
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             LOG.d(TAG, "Build SDK Greater than or equal to Nougat");
             String applicationId = (String) BuildHelper.getBuildConfigValue((Activity) mContext, "APPLICATION_ID");
             Uri apkUri = FileProvider.getUriForFile(mContext, applicationId + ".appupdate.provider", apkFile);
@@ -109,7 +114,7 @@ public class DownloadHandler extends Handler {
             i.setData(apkUri);
             i.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             mContext.startActivity(i);
-        }else{
+        } else {
             LOG.d(TAG, "Build SDK less than Nougat");
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
